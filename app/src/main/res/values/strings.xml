@@ -3,5 +3,8 @@
 
     <string name="app_name">Simple Tweets</string>
     <string name="login_label">connect with twitter</string>
+    <string name="title_activity_timeline">home timeline</string>
+
+    <string name="action_settings">Settings</string>
 
 </resources>
