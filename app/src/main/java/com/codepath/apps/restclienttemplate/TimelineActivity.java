@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import com.codepath.apps.restclienttemplate.adapters.EndlessScrollListener;
 import com.codepath.apps.restclienttemplate.adapters.TweetsArrayAdapter;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -22,32 +23,41 @@ public class TimelineActivity extends AppCompatActivity {
     private ArrayList<Tweet> tweets;
     private TweetsArrayAdapter aTweets;
     private ListView lvTweets;
+    private long max_id = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
-        lvTweets = (ListView) findViewById(R.id.lvTweets);
+        setUpView();
+
         tweets = new ArrayList<>(); // initialize
         aTweets = new TweetsArrayAdapter(this, tweets); // initialize adapter
         // connect the list view
         lvTweets.setAdapter(aTweets);
         // get the client
         client = TwitterApplication.getRestClient(); // singleton client
-        populateTimeline();
+        initialPopulateTimeline();
     }
 
-    /*
-      TODO:
-      * [ ] endless scroll
-     */
-    private void populateTimeline() {
-        client.getHomeTimeline(new JsonHttpResponseHandler() {
+    private void setUpView() {
+        lvTweets = (ListView) findViewById(R.id.lvTweets);
+        lvTweets.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            protected boolean onLoadMore(int page, int totalItemsCount) {
+                int position = aTweets.getCount() - 1;
+                max_id = aTweets.getItem(position).getUid();
+                populateTimeline(max_id);
+                return true;
+            }
+        });
+    }
+
+    private void populateTimeline(Long offset) {
+        client.getHomeTimeline(offset, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray jsonResponse) {
-                Log.d("DEBUG", jsonResponse.toString());
                 aTweets.addAll(Tweet.fromJSONArray(jsonResponse));
-                Log.d("DEBUG", aTweets.toString());
             }
 
             @Override
@@ -55,6 +65,11 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.d("DEBUG", errorResponse.toString());
             }
         });
+    }
+
+    private void initialPopulateTimeline() {
+        aTweets.clear();
+        populateTimeline(max_id);
     }
 
     @Override
