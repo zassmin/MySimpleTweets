@@ -16,7 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TimelineActivity extends AppCompatActivity {
     private TwitterClient client;
@@ -38,16 +37,15 @@ public class TimelineActivity extends AppCompatActivity {
         populateTimeline();
     }
 
-    // end api request
-    // fill the listview by creating the tweet object from json
+    /*
+      TODO:
+      * [ ] endless scroll
+     */
     private void populateTimeline() {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray jsonResponse) {
                 Log.d("DEBUG", jsonResponse.toString());
-                // deserialize json
-                // create models
-                // load the model data into the listview
                 aTweets.addAll(Tweet.fromJSONArray(jsonResponse));
                 Log.d("DEBUG", aTweets.toString());
             }

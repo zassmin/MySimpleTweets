@@ -92,13 +92,17 @@ package com.codepath.apps.restclienttemplate.models;
 ]
 */
 
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by zassmin on 9/30/15.
@@ -108,6 +112,7 @@ public class Tweet {
     private long uid;
     private String createdAt;
     private User user;
+    private String relativeCreatedAtTime;
 
 
     public User getUser() {
@@ -133,6 +138,7 @@ public class Tweet {
             tweet.body = jsonObject.getString("text");
             tweet.uid = jsonObject.getLong("id");
             tweet.createdAt = jsonObject.getString("created_at");
+            tweet.setShortRelativeTime(tweet.createdAt);
             tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -156,5 +162,30 @@ public class Tweet {
             }
         }
         return tweets;
+    }
+
+    public String getRelativeCreatedAtTime() {
+        return relativeCreatedAtTime;
+    }
+
+    private String setRelativeCreatedAtTime(String createdAt) {
+        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+        simpleDateFormat.setLenient(true);
+        String relativeTime = "";
+        try {
+            long dateMillis = simpleDateFormat.parse(createdAt).getTime();
+            relativeTime = DateUtils.getRelativeTimeSpanString(dateMillis,
+                    System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return relativeTime;
+    }
+
+    public String setShortRelativeTime(String createdAt) {
+        String relativeTime = setRelativeCreatedAtTime(createdAt);
+        String[] arr = relativeTime.split(" ");
+        return this.relativeCreatedAtTime = arr[0] + arr[1].charAt(0);
     }
 }
