@@ -1,11 +1,13 @@
 package com.codepath.apps.restclienttemplate;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.adapters.EndlessScrollListener;
 import com.codepath.apps.restclienttemplate.adapters.TweetsArrayAdapter;
@@ -19,12 +21,18 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class TimelineActivity extends AppCompatActivity {
+    private static final int REQUEST_CODE = 22;
     private TwitterClient client;
     private ArrayList<Tweet> tweets;
     private TweetsArrayAdapter aTweets;
     private ListView lvTweets;
     private long max_id = 1;
 
+    /*
+    TODOs:
+      * [ ] User can then enter a new tweet and post this to twitter (post to twitter api)
+      * [ ] User is taken back to home timeline with new tweet visible in timeline (make sure request is updating on twitter)
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +70,11 @@ public class TimelineActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d("DEBUG", errorResponse.toString());
+                if (errorResponse != null) {
+                    Log.d("DEBUG", errorResponse.toString());
+                } else {
+                    Log.d("DEBUG", "null error");
+                }
             }
         });
     }
@@ -81,16 +93,23 @@ public class TimelineActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onCompose(MenuItem item) {
+        Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, ComposeActivity.class);
+        // needs current user info stored locally
+        // intent.putExtra("profile_image", current_user.profileImage);
+        startActivityForResult(intent, REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // find out what the result code for close is
+        if (requestCode == REQUEST_CODE && resultCode == 200) {
+            Toast.makeText(this, "happy data", Toast.LENGTH_SHORT).show();
+        }
     }
 }

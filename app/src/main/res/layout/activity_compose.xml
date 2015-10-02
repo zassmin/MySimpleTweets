@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.codepath.apps.restclienttemplate.ComposeActivity">
+
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/tvProfileImage"
+        android:background="@color/material_deep_teal_200"
+    />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="X"
+        android:onClick="onClose"
+        android:id="@+id/btnClose"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/etTweet"
+        android:layout_alignParentRight="true" />
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="100dp"
+        android:text="what's happening?"
+        android:id="@+id/etTweet"
+        android:gravity="top"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/tvProfileImage"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="tweet"
+        android:onClick="onTweet"
+        android:id="@+id/btnTweet"
+        android:layout_below="@+id/etTweet"
+        android:layout_alignParentRight="true" />
+</RelativeLayout>
