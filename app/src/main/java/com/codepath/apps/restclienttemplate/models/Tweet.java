@@ -93,7 +93,10 @@ package com.codepath.apps.restclienttemplate.models;
 */
 
 import android.text.format.DateUtils;
-import android.util.Log;
+
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -107,13 +110,17 @@ import java.util.Locale;
 /**
  * Created by zassmin on 9/30/15.
  */
-public class Tweet {
+@Table(name = "tweets")
+public class Tweet extends Model {
+    @Column(name = "body")
     private String body;
-    private long uid;
+    @Column(name = "remote_id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+    private long remoteId;
+    @Column(name = "created_at")
     private String createdAt;
+    @Column(name = "user")
     private User user;
     private String relativeCreatedAtTime;
-
 
     public User getUser() {
         return user;
@@ -127,8 +134,8 @@ public class Tweet {
         return body;
     }
 
-    public long getUid() {
-        return uid;
+    public long getRemoteId() {
+        return remoteId;
     }
 
     // deserialize the json
@@ -136,10 +143,11 @@ public class Tweet {
         Tweet tweet = new Tweet();
         try {
             tweet.body = jsonObject.getString("text");
-            tweet.uid = jsonObject.getLong("id");
+            tweet.remoteId = jsonObject.getLong("id");
             tweet.createdAt = jsonObject.getString("created_at");
             tweet.setShortRelativeTime(tweet.createdAt);
-            tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
+            tweet.user = User.findOrCreateFromJson(jsonObject.getJSONObject("user"));
+            tweet.save();
         } catch (JSONException e) {
             e.printStackTrace();
         }

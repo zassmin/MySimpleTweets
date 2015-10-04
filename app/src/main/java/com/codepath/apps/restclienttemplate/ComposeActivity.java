@@ -1,19 +1,33 @@
 package com.codepath.apps.restclienttemplate;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.codepath.apps.restclienttemplate.models.User;
+import com.squareup.picasso.Picasso;
+
 public class ComposeActivity extends AppCompatActivity {
+    User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compose);
+        setUpView();
+    }
+
+    private void setUpView() {
+        // set current user
+        currentUser = (User) getIntent().getSerializableExtra("current_user");
+        // render image
+        ImageView ivUserProfileImage = (ImageView) findViewById(R.id.ivUserProfileImage);
+        ivUserProfileImage.setImageResource(android.R.color.transparent); // FIXME: do I need to do this if it's not an adapter?
+        Picasso.with(this).load(currentUser.getProfileImageUrl()).into(ivUserProfileImage);
     }
 
     @Override

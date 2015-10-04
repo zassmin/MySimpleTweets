@@ -11,7 +11,9 @@ import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.adapters.EndlessScrollListener;
 import com.codepath.apps.restclienttemplate.adapters.TweetsArrayAdapter;
+import com.codepath.apps.restclienttemplate.models.Session;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.apps.restclienttemplate.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -27,9 +29,12 @@ public class TimelineActivity extends AppCompatActivity {
     private TweetsArrayAdapter aTweets;
     private ListView lvTweets;
     private long max_id = 1;
+    private User currentUser;
+    private Session session;
 
     /*
     TODOs:
+      * [ ] figure out how to post a tweet through the api
       * [ ] User can then enter a new tweet and post this to twitter (post to twitter api)
       * [ ] User is taken back to home timeline with new tweet visible in timeline (make sure request is updating on twitter)
      */
@@ -38,13 +43,14 @@ public class TimelineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
         setUpView();
-
+        session = new Session();
         tweets = new ArrayList<>(); // initialize
         aTweets = new TweetsArrayAdapter(this, tweets); // initialize adapter
         // connect the list view
         lvTweets.setAdapter(aTweets);
         // get the client
         client = TwitterApplication.getRestClient(); // singleton client
+        populateCurrentUser();
         initialPopulateTimeline();
     }
 
@@ -54,7 +60,7 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             protected boolean onLoadMore(int page, int totalItemsCount) {
                 int position = aTweets.getCount() - 1;
-                max_id = aTweets.getItem(position).getUid();
+                max_id = aTweets.getItem(position).getRemoteId();
                 populateTimeline(max_id);
                 return true;
             }
@@ -84,6 +90,48 @@ public class TimelineActivity extends AppCompatActivity {
         populateTimeline(max_id);
     }
 
+    private void populateCurrentUser() {
+        client.getAccountSettings(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // create a user
+                currentUser = User.findOrSetScreenNameFromJSON(response);
+                // set a current user
+                session.setCurrentUser(currentUser);
+                // only make the second request if that use isn't stored locally
+                if (session.getCurrentUser() != null && session.getCurrentUser().getRemoteId() == 0) {
+                    populateNewCurrentUser();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                if (errorResponse != null) {
+                    Log.d("DEBUG", errorResponse.toString());
+                } else {
+                    Log.d("DEBUG", "null error");
+                }
+            }
+        });
+    }
+
+    private void populateNewCurrentUser() {
+        client.getUserShow(session.getCurrentUser().getScreenName(), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    session.getCurrentUser().setName(response.getString("name"));
+                    session.getCurrentUser().setProfileImageUrl(response.getString("profile_image_url"));
+                    session.getCurrentUser().setRemoteId(response.getLong("id"));
+                    session.getCurrentUser().save();
+                    Log.d("current user", currentUser.getName());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -100,8 +148,7 @@ public class TimelineActivity extends AppCompatActivity {
     public void onCompose(MenuItem item) {
         Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, ComposeActivity.class);
-        // needs current user info stored locally
-        // intent.putExtra("profile_image", current_user.profileImage);
+        intent.putExtra("current_user", session.getCurrentUser());
         startActivityForResult(intent, REQUEST_CODE);
     }
 

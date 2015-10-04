@@ -21,6 +21,7 @@ public class TwitterApplication extends com.activeandroid.app.Application {
 	}
 
 	public static TwitterClient getRestClient() {
+		// how does this take us to the login activity?
 		return (TwitterClient) TwitterClient.getInstance(TwitterClient.class, TwitterApplication.context);
 	}
 }
