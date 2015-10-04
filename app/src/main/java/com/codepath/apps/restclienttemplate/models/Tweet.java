@@ -102,6 +102,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ import java.util.Locale;
  * Created by zassmin on 9/30/15.
  */
 @Table(name = "tweets")
-public class Tweet extends Model {
+public class Tweet extends Model implements Serializable {
     @Column(name = "body")
     private String body;
     @Column(name = "remote_id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
@@ -136,6 +137,18 @@ public class Tweet extends Model {
 
     public long getRemoteId() {
         return remoteId;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     // deserialize the json

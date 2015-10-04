@@ -32,12 +32,6 @@ public class TimelineActivity extends AppCompatActivity {
     private User currentUser;
     private Session session;
 
-    /*
-    TODOs:
-      * [ ] figure out how to post a tweet through the api
-      * [ ] User can then enter a new tweet and post this to twitter (post to twitter api)
-      * [ ] User is taken back to home timeline with new tweet visible in timeline (make sure request is updating on twitter)
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +88,7 @@ public class TimelineActivity extends AppCompatActivity {
         client.getAccountSettings(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // FIXME: this flow breaks if a user updates their screen_name
                 // create a user
                 currentUser = User.findOrSetScreenNameFromJSON(response);
                 // set a current user
@@ -154,9 +149,10 @@ public class TimelineActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // find out what the result code for close is
-        if (requestCode == REQUEST_CODE && resultCode == 200) {
-            Toast.makeText(this, "happy data", Toast.LENGTH_SHORT).show();
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            Tweet tweetFromServer = (Tweet) data.getSerializableExtra("tweet");
+            Toast.makeText(this, "api data" + tweetFromServer.getBody().toString(), Toast.LENGTH_LONG).show();
+            aTweets.insert(tweetFromServer, 0);
         }
     }
 }

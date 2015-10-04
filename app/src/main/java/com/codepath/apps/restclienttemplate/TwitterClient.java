@@ -1,7 +1,6 @@
 package com.codepath.apps.restclienttemplate;
 
 import org.scribe.builder.api.Api;
-import org.scribe.builder.api.FlickrApi;
 import org.scribe.builder.api.TwitterApi;
 
 import android.content.Context;
@@ -55,5 +54,12 @@ public class TwitterClient extends OAuthBaseClient {
 		RequestParams params = new RequestParams();
 		params.put("screen_name", screenName);
 		getClient().get(apiUrl, params, handler);
+	}
+
+	public void postTweet(String status, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/update.json");
+		RequestParams params = new RequestParams();
+		params.put("status", status);
+		getClient().post(apiUrl, params, handler);
 	}
 }
