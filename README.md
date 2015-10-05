@@ -42,7 +42,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-...coming soon...
+![WT](https://media.giphy.com/media/3oEdv9mMllqEBKlnW0/giphy.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
