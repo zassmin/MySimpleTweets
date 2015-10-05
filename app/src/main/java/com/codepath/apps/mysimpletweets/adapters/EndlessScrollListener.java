@@ -1,4 +1,4 @@
-package com.codepath.apps.restclienttemplate.adapters;
+package com.codepath.apps.mysimpletweets.adapters;
 
 import android.widget.AbsListView;
 

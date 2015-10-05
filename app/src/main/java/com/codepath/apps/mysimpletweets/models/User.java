@@ -1,4 +1,4 @@
-package com.codepath.apps.restclienttemplate.models;
+package com.codepath.apps.mysimpletweets.models;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;

@@ -1,4 +1,4 @@
-package com.codepath.apps.restclienttemplate.models;
+package com.codepath.apps.mysimpletweets.models;
 
 /**
  * Created by zassmin on 10/3/15.
