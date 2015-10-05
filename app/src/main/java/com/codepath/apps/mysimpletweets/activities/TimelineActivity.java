@@ -11,8 +11,7 @@ import android.widget.Toast;
 
 import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.TwitterApplication;
-import com.codepath.apps.mysimpletweets.TwitterClient;
-import com.codepath.apps.mysimpletweets.activities.ComposeActivity;
+import com.codepath.apps.mysimpletweets.network.TwitterClient;
 import com.codepath.apps.mysimpletweets.adapters.EndlessScrollListener;
 import com.codepath.apps.mysimpletweets.adapters.TweetsArrayAdapter;
 import com.codepath.apps.mysimpletweets.models.Session;

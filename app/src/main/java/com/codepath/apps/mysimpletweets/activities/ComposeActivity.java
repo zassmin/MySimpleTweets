@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.TwitterApplication;
-import com.codepath.apps.mysimpletweets.TwitterClient;
+import com.codepath.apps.mysimpletweets.network.TwitterClient;
 import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.codepath.apps.mysimpletweets.models.User;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
