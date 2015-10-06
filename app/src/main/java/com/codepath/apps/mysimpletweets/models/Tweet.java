@@ -97,6 +97,8 @@ import android.text.format.DateUtils;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
+import com.activeandroid.query.Select;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -106,6 +108,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -207,6 +210,14 @@ public class Tweet extends Model implements Serializable {
     public String setShortRelativeTime(String createdAt) {
         String relativeTime = setRelativeCreatedAtTime(createdAt);
         String[] arr = relativeTime.split(" ");
-        return this.relativeCreatedAtTime = arr[0] + arr[1].charAt(0);
+        if (arr.length > 1) {
+            return this.relativeCreatedAtTime = String.valueOf(arr[0] + arr[1].charAt(0));
+        }
+        return this.relativeCreatedAtTime = String.valueOf(arr[0].charAt(0));
+
+    }
+
+    public static List<Tweet> getAll() {
+        return new Select().from(Tweet.class).orderBy("CREATED_AT DESC").execute();
     }
 }

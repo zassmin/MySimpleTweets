@@ -19,7 +19,7 @@ public class User extends Model implements Serializable {
     private String name;
     @Column(name = "remote_id", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     private long remoteId;
-    @Column(name = "screen_name")
+    @Column(name = "screen_name", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
     private String screenName;
     @Column(name = "profile_image")
     private String profileImageUrl;
@@ -100,6 +100,19 @@ public class User extends Model implements Serializable {
             e.printStackTrace();
         }
 
+        return u;
+    }
+
+    public static User findById(long id) {
+        // TODO: verify id type
+        User u = null;
+        u = new Select().from(User.class).where("id = ?", id).executeSingle();
+        return u;
+    }
+
+    public static User findByScreenName(String screenName) {
+        User u = null;
+        u = new Select().from(User.class).where("screen_name = ?", screenName).executeSingle();
         return u;
     }
 }

@@ -1,6 +1,8 @@
 package com.codepath.apps.mysimpletweets.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,7 @@ import com.codepath.apps.mysimpletweets.adapters.TweetsArrayAdapter;
 import com.codepath.apps.mysimpletweets.models.Session;
 import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.codepath.apps.mysimpletweets.models.User;
+import com.codepath.apps.mysimpletweets.utils.NetworkConnectivityReceiver;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -49,6 +52,7 @@ public class TimelineActivity extends AppCompatActivity {
         client = TwitterApplication.getRestClient(); // singleton client
         populateCurrentUser();
         initialPopulateTimeline();
+        // TODO: delete too many tweets from db
     }
 
     private void setUpView() {
@@ -65,6 +69,11 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     private void populateTimeline(Long offset) {
+        if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
+            Toast.makeText(this, "you are offline, there are no new tweets", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         client.getHomeTimeline(offset, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray jsonResponse) {
@@ -84,10 +93,49 @@ public class TimelineActivity extends AppCompatActivity {
 
     private void initialPopulateTimeline() {
         aTweets.clear();
+
+        if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
+            aTweets.addAll(Tweet.getAll());
+            return;
+        }
+
         populateTimeline(max_id);
     }
 
     private void populateCurrentUser() {
+        if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
+            // grab current user from Shared Prefs, if there is one
+            // FIXME: should this be on a different thread?
+            SharedPreferences pref =
+                    PreferenceManager.getDefaultSharedPreferences(this);
+            String userId = pref.getString("user_id", "");
+            if (!userId.isEmpty()) {
+                long uId = Long.parseLong(userId);
+                currentUser = User.findById(uId);
+                if (currentUser != null) {
+                    session.setCurrentUser(currentUser);
+                } else {
+                    logOut();
+                }
+                return;
+            }
+
+            // check for screen_name since user_id is empty
+            // this could happen if we never made a successful request to access the users/show
+            // endpoint and only accessed the account settings endpoint
+            String screenName = pref.getString("screen_name", "");
+            if (!screenName.isEmpty()) {
+                currentUser = User.findByScreenName(screenName);
+                if (currentUser != null) {
+                    session.setCurrentUser(currentUser);
+                } else {
+                    logOut();
+                }
+                return;
+            }
+            return; // exit if both options are nil, we should not call this endpoint if user isn't online
+        }
+
         client.getAccountSettings(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -97,8 +145,18 @@ public class TimelineActivity extends AppCompatActivity {
                 // set a current user
                 session.setCurrentUser(currentUser);
                 // only make the second request if that use isn't stored locally
-                if (session.getCurrentUser() != null && session.getCurrentUser().getRemoteId() == 0) {
-                    populateNewCurrentUser();
+                if (session.getCurrentUser() != null) {
+                    // set shared preferences
+                    // this should be happening each time!!
+                    SharedPreferences pref =
+                            PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                    SharedPreferences.Editor edit = pref.edit();
+                    edit.putString("screen_name", session.getCurrentUser().getScreenName());
+                    if (session.getCurrentUser().getRemoteId() == 0) {
+                        populateNewCurrentUser();
+                        edit.putString("user_id", session.getCurrentUser().getId().toString());
+                    }
+                    edit.commit();
                 }
             }
 
@@ -157,5 +215,11 @@ public class TimelineActivity extends AppCompatActivity {
             Toast.makeText(this, "api data" + tweetFromServer.getBody().toString(), Toast.LENGTH_LONG).show();
             aTweets.insert(tweetFromServer, 0);
         }
+    }
+
+    private void logOut() {
+        Toast.makeText(this,
+                "we should be logging you out since there is no user session",
+                Toast.LENGTH_LONG).show();
     }
 }

@@ -15,6 +15,7 @@ import com.codepath.apps.mysimpletweets.TwitterApplication;
 import com.codepath.apps.mysimpletweets.network.TwitterClient;
 import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.codepath.apps.mysimpletweets.models.User;
+import com.codepath.apps.mysimpletweets.utils.NetworkConnectivityReceiver;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
@@ -74,29 +75,35 @@ public class ComposeActivity extends AppCompatActivity {
             Toast.makeText(this, "tweet needs text", Toast.LENGTH_LONG).show();
         } else {
             // api call
-            client.postTweet(status, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    populateTweetFromResponse(response);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    // handle 403 with rate limit error or tweet dup
-                }
-            });
+            populateTweet(status);
         }
     }
 
-    private void populateTweetFromResponse(JSONObject response) {
-        // create tweet
-        Tweet tweet = Tweet.fromJSON(response);
+    private void populateTweet(String status) {
+        if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
+            // build tweet object, send it back to the intent
+            return;
+        }
 
-        // intent
-        Intent data = new Intent();
-        data.putExtra("tweet", tweet);
-        setResult(RESULT_OK, data);
-        finish();
+        client.postTweet(status, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // create tweet
+                // TODO: make this an update, incase the tweet was offline
+                Tweet tweet = Tweet.fromJSON(response);
+
+                // intent
+                Intent data = new Intent();
+                data.putExtra("tweet", tweet);
+                setResult(RESULT_OK, data);
+                finish();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                // handle 403 with rate limit error or tweet dup
+            }
+        });
     }
 
     public static class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {

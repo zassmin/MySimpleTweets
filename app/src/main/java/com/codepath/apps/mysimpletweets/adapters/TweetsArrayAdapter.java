@@ -41,6 +41,10 @@ public class TweetsArrayAdapter extends ArrayAdapter<Tweet> {
 
         tvUserName.setText(tweet.getUser().getScreenName());
         tvBody.setText(tweet.getBody());
+        // this needs to dynamically render
+        if (tweet.getRelativeCreatedAtTime() == null) {
+            tweet.setShortRelativeTime(tweet.getCreatedAt());
+        }
         tvCreatedAt.setText(tweet.getRelativeCreatedAtTime());
         ivProfileImage.setImageResource(android.R.color.transparent); // clear out old image for a recycled view
         Picasso.with(getContext()).load(tweet.getUser().getProfileImageUrl()).into(ivProfileImage);

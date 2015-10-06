@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Toast;
 
 import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.network.TwitterClient;
+import com.codepath.apps.mysimpletweets.utils.NetworkConnectivityReceiver;
 import com.codepath.oauth.OAuthLoginActionBarActivity;
 
 public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
@@ -39,6 +41,12 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 	@Override
 	public void onLoginFailure(Exception e) {
 		e.printStackTrace();
+
+		if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
+			Toast.makeText(this,
+					"you are current offline, please connect when you are online",
+					Toast.LENGTH_LONG).show();
+		}
 	}
 
 	// Click handler method for the button used to start OAuth flow
