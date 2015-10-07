@@ -16,7 +16,6 @@ import com.codepath.apps.mysimpletweets.network.TwitterClient;
 import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.codepath.apps.mysimpletweets.models.User;
 import com.codepath.apps.mysimpletweets.utils.NetworkConnectivityReceiver;
-import com.codepath.oauth.OAuthLoginActionBarActivity;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
 
@@ -107,47 +106,6 @@ public class ComposeActivity extends AppCompatActivity {
                 // handle 403 with rate limit error or tweet dup
             }
         });
-    }
-
-    public static class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
-
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_login);
-        }
-
-
-        // Inflate the menu; this adds items to the action bar if it is present.
-        @Override
-        public boolean onCreateOptionsMenu(Menu menu) {
-            getMenuInflater().inflate(R.menu.login, menu);
-            return true;
-        }
-
-        // OAuth authenticated successfully, launch primary authenticated activity
-        // i.e Display application "homepage"
-        @Override
-        public void onLoginSuccess() {
-            // how does this LoginActivity know to go first?
-            Intent i = new Intent(this, TimelineActivity.class);
-            startActivity(i);
-        }
-
-        // OAuth authentication flow failed, handle the error
-        // i.e Display an error dialog or toast
-        @Override
-        public void onLoginFailure(Exception e) {
-            e.printStackTrace();
-        }
-
-        // Click handler method for the button used to start OAuth flow
-        // Uses the client to initiate OAuth authorization
-        // This should be tied to a button used to login
-        public void loginToRest(View view) {
-            getClient().connect();
-        }
-
     }
 
     public void setUpTweetIntent(Tweet tweet) {
