@@ -119,30 +119,14 @@ public class TimelineActivity extends AppCompatActivity {
                 }
                 return;
             }
-
-            // check for screen_name since user_id is empty
-            // this could happen if we never made a successful request to access the users/show
-            // endpoint and only accessed the account settings endpoint
-            String screenName = pref.getString("screen_name", "");
-            if (!screenName.isEmpty()) {
-                currentUser = User.findByScreenName(screenName);
-                if (currentUser != null) {
-                    session.setCurrentUser(currentUser);
-                } else {
-                    logOut();
-                }
-                return;
-            }
-            return; // exit if both options are nil, we should not call this endpoint if user isn't online
+            return; // exit if null, we should not call this endpoint if user isn't online
         }
 
-        client.getAccountSettings(new JsonHttpResponseHandler() {
+        client.getUserVerificationSettings(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // FIXME: this flow breaks if a user updates their screen_name
-                // FIXME: retrieve current user through https://dev.twitter.com/rest/reference/get/account/verify_credentials
                 // create a user
-                currentUser = User.findOrSetScreenNameFromJSON(response);
+                currentUser = User.findOrCreateFromJson(response);
                 // set a current user
                 session.setCurrentUser(currentUser);
                 // only make the second request if that use isn't stored locally
@@ -152,11 +136,7 @@ public class TimelineActivity extends AppCompatActivity {
                     SharedPreferences pref =
                             PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                     SharedPreferences.Editor edit = pref.edit();
-                    edit.putString("screen_name", session.getCurrentUser().getScreenName());
-                    if (session.getCurrentUser().getRemoteId() == 0) {
-                        populateNewCurrentUser();
-                        edit.putString("user_id", session.getCurrentUser().getId().toString());
-                    }
+                    edit.putString("user_id", session.getCurrentUser().getId().toString());
                     edit.commit();
                 }
             }
@@ -167,23 +147,6 @@ public class TimelineActivity extends AppCompatActivity {
                     Log.d("DEBUG", errorResponse.toString());
                 } else {
                     Log.d("DEBUG", "null error");
-                }
-            }
-        });
-    }
-
-    private void populateNewCurrentUser() {
-        client.getUserShow(session.getCurrentUser().getScreenName(), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    session.getCurrentUser().setName(response.getString("name"));
-                    session.getCurrentUser().setProfileImageUrl(response.getString("profile_image_url"));
-                    session.getCurrentUser().setRemoteId(response.getLong("id"));
-                    session.getCurrentUser().save();
-                    Log.d("current user", currentUser.getName());
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         });

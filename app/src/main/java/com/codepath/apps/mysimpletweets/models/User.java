@@ -53,27 +53,6 @@ public class User extends Model implements Serializable {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public static User findOrSetScreenNameFromJSON(JSONObject json) {
-        String sN = "";
-        try {
-            sN = json.getString("screen_name");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        User user;
-        user = new Select().from(User.class).where("screen_name = ?", sN).executeSingle();
-        if (user != null && user.getScreenName() != null) {
-            return user;
-        }
-
-        user = new User();
-        user.setScreenName(sN);
-        user.save();
-
-        return user;
-    }
-
     // deserialize user json
     public static User findOrCreateFromJson(JSONObject json) {
         long rId = 0;
@@ -104,15 +83,6 @@ public class User extends Model implements Serializable {
     }
 
     public static User findById(long id) {
-        // TODO: verify id type
-        User u = null;
-        u = new Select().from(User.class).where("id = ?", id).executeSingle();
-        return u;
-    }
-
-    public static User findByScreenName(String screenName) {
-        User u = null;
-        u = new Select().from(User.class).where("screen_name = ?", screenName).executeSingle();
-        return u;
+        return new Select().from(User.class).where("id = ?", id).executeSingle();
     }
 }
