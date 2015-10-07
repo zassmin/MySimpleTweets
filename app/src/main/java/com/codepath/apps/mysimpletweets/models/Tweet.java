@@ -97,7 +97,6 @@ import android.text.format.DateUtils;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
-import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 
 import org.json.JSONArray;
@@ -219,5 +218,11 @@ public class Tweet extends Model implements Serializable {
 
     public static List<Tweet> getAll() {
         return new Select().from(Tweet.class).orderBy("CREATED_AT DESC").execute();
+    }
+
+    public String setCreatedAtNow() {
+        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+        return simpleDateFormat.format(System.currentTimeMillis());
     }
 }

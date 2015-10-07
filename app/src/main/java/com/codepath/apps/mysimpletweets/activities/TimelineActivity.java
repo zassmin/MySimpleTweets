@@ -140,6 +140,7 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // FIXME: this flow breaks if a user updates their screen_name
+                // FIXME: retrieve current user through https://dev.twitter.com/rest/reference/get/account/verify_credentials
                 // create a user
                 currentUser = User.findOrSetScreenNameFromJSON(response);
                 // set a current user

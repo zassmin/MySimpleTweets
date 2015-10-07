@@ -26,6 +26,7 @@ import org.json.JSONObject;
 public class ComposeActivity extends AppCompatActivity {
     User currentUser;
     TwitterClient client;
+    Tweet tweet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,22 +82,24 @@ public class ComposeActivity extends AppCompatActivity {
 
     private void populateTweet(String status) {
         if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
-            // build tweet object, send it back to the intent
-            return;
+            tweet = new Tweet();
+            tweet.setBody(status);
+            tweet.setCreatedAt(tweet.setCreatedAtNow());
+            tweet.setUser(currentUser); // FIXME: need current user validation
+            tweet.save();
+            // Pass data back if offline, in the mean time, post task will run in the background
+            // TODO: get tweet to post to twitter, send to background until internet works again
         }
 
         client.postTweet(status, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // create tweet
-                // TODO: make this an update, incase the tweet was offline
+                // TODO: make this an update, in case the tweet was offline
                 Tweet tweet = Tweet.fromJSON(response);
 
                 // intent
-                Intent data = new Intent();
-                data.putExtra("tweet", tweet);
-                setResult(RESULT_OK, data);
-                finish();
+                setUpTweetIntent(tweet);
             }
 
             @Override
@@ -145,5 +148,12 @@ public class ComposeActivity extends AppCompatActivity {
             getClient().connect();
         }
 
+    }
+
+    public void setUpTweetIntent(Tweet tweet) {
+        Intent data = new Intent();
+        data.putExtra("tweet", tweet);
+        setResult(RESULT_OK, data);
+        finish();
     }
 }
