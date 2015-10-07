@@ -53,7 +53,7 @@ public class TimelineActivity extends AppCompatActivity {
         // get the client
         client = TwitterApplication.getRestClient(); // singleton client
         populateCurrentUser();
-        initialPopulateTimeline();
+        initialOrRefreshPopulateTimeline((long) 0);
         // TODO: delete too many tweets from db
     }
 
@@ -63,10 +63,8 @@ public class TimelineActivity extends AppCompatActivity {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
-                fetchTimelineAsync(0);
+                initialOrRefreshPopulateTimeline((long) 0);
+                swipeContainer.setRefreshing(false);
             }
         });
         // Configure the refreshing colors
@@ -85,23 +83,6 @@ public class TimelineActivity extends AppCompatActivity {
                 return true;
             }
         });
-    }
-
-    private void fetchTimelineAsync(int page) {
-        client.getHomeTimeline(0, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
-                aTweets.clear();
-                aTweets.addAll(Tweet.fromJSONArray(json));
-                swipeContainer.setRefreshing(false);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.d("DEBUG", "Fetch timeline error: " + throwable.toString());
-            }
-        });
-
     }
 
     private void populateTimeline(Long offset) {
@@ -127,7 +108,7 @@ public class TimelineActivity extends AppCompatActivity {
         });
     }
 
-    private void initialPopulateTimeline() {
+    private void initialOrRefreshPopulateTimeline(long page) {
         aTweets.clear();
 
         if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
@@ -135,7 +116,7 @@ public class TimelineActivity extends AppCompatActivity {
             return;
         }
 
-        populateTimeline(max_id);
+        populateTimeline(page);
     }
 
     private void populateCurrentUser() {
