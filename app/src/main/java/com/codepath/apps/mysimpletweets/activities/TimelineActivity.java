@@ -3,6 +3,7 @@ package com.codepath.apps.mysimpletweets.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +38,7 @@ public class TimelineActivity extends AppCompatActivity {
     private long max_id = 1;
     private User currentUser;
     private Session session;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,23 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     private void setUpView() {
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                fetchTimelineAsync(0);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
         lvTweets = (ListView) findViewById(R.id.lvTweets);
         lvTweets.setOnScrollListener(new EndlessScrollListener() {
             @Override
@@ -66,6 +85,23 @@ public class TimelineActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void fetchTimelineAsync(int page) {
+        client.getHomeTimeline(0, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
+                aTweets.clear();
+                aTweets.addAll(Tweet.fromJSONArray(json));
+                swipeContainer.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.d("DEBUG", "Fetch timeline error: " + throwable.toString());
+            }
+        });
+
     }
 
     private void populateTimeline(Long offset) {
