@@ -39,4 +39,6 @@ dependencies {
     compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
     // refresh library
     compile 'com.android.support:support-v4:22.2.1'
+    // view pager
+    compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
 }
