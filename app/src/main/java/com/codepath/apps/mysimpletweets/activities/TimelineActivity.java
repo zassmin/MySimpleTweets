@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.apps.mysimpletweets.Fragments.HomeTimelineFragment;
 import com.codepath.apps.mysimpletweets.Fragments.MentionsTimelineFragment;
+import com.codepath.apps.mysimpletweets.Fragments.UserTimelineFragment;
 import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.TwitterApplication;
 import com.codepath.apps.mysimpletweets.network.TwitterClient;
@@ -192,6 +194,12 @@ public class TimelineActivity extends AppCompatActivity {
         Toast.makeText(this,
                 "we should be logging you out since there is no user session",
                 Toast.LENGTH_LONG).show();
+    }
+
+    public void onProfile(MenuItem item) {
+        Intent i = new Intent(this, ProfileActivity.class);
+//        i.putExtra("screen_name", currentUser.getScreenName());
+        startActivity(i);
     }
 
     public class TweetsPagerAdapter extends FragmentPagerAdapter {
