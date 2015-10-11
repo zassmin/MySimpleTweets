@@ -24,7 +24,7 @@ The following **optional** features are implemented:
 * [ ] User can **see a counter with total number of characters left for tweet** on compose tweet page
 * [ ] User can **click a link within a tweet body** on tweet details view. The click will launch the web browser with relevant page opened.
 * [X] User can **pull down to refresh tweets timeline**
-* [ ] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
+* [X] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
 * [ ] User can tap a tweet to **open a detailed tweet view**
 * [ ] User can **select "reply" from detail view to respond to a tweet**
 * [ ] Improve the user interface and theme the app to feel "twitter branded"
@@ -71,7 +71,7 @@ The following **required** functionality is completed:
 The following **optional** features are implemented:
 
 * [ ] User can view following / followers list through the profile
-* [ ] Implements robust error handling, [check if internet is available](http://guides.codepath.com/android/Sending-and-Managing-Network-Requests#checking-for-network-connectivity), handle error cases, network failures
+* [X] Implements robust error handling, [check if internet is available](http://guides.codepath.com/android/Sending-and-Managing-Network-Requests#checking-for-network-connectivity), handle error cases, network failures
 * [ ] When a network request is sent, user sees an [indeterminate progress indicator](http://guides.codepath.com/android/Handling-ProgressBars#progress-within-actionbar)
 * [ ] User can **"reply" to any tweet on their home timeline**
   * [ ] The user that wrote the original tweet is automatically "@" replied in compose
@@ -95,6 +95,13 @@ Here's a walkthrough of implemented user stories:
 ...coming soon...
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
+
+## Notes
+
+* At which point should we start deleting tweets/data from out local db? Daily, 
+After a number has exceeded?
+* I don't know how to return the tweet object in offline mode while making sure 
+the tweet posts when the user is back online. Any suggestions? 
 
 ## Open-source libraries used
 

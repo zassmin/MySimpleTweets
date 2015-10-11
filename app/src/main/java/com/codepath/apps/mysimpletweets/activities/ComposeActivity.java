@@ -88,6 +88,8 @@ public class ComposeActivity extends AppCompatActivity {
             tweet.save();
             // Pass data back if offline, in the mean time, post task will run in the background
             // TODO: get tweet to post to twitter, send to background until internet works again
+            Toast.makeText(this, "you are offline, we'll post when you are back online", Toast.LENGTH_LONG).show();
+            return;
         }
 
         client.postTweet(status, new JsonHttpResponseHandler() {

@@ -55,8 +55,6 @@ public class TimelineActivity extends AppCompatActivity {
 
         session = new Session();
         populateCurrentUser();
-//        initialOrRefreshPopulateTimeline((long) 0);
-        // TODO: delete too many tweets from db
     }
 
     private void populateCurrentUser() {
@@ -129,7 +127,6 @@ public class TimelineActivity extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_CODE);
     }
 
-    // TODO: http://guides.codepath.com/android/Creating-and-Using-Fragments#finding-fragment-within-pager
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {

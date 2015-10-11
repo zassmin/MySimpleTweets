@@ -4,22 +4,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.adapters.EndlessScrollListener;
 import com.codepath.apps.mysimpletweets.adapters.TweetsArrayAdapter;
 import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.codepath.apps.mysimpletweets.utils.NetworkConnectivityReceiver;
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import org.apache.http.Header;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,16 +29,18 @@ public class TweetsListFragment extends Fragment {
     private ListView lvTweets;
     private long max_id = 1;
     private SwipeRefreshLayout swipeContainer;
+    private View v;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragments_tweets_list, container, false);
+        v = inflater.inflate(R.layout.fragments_tweets_list, container, false);
         lvTweets = (ListView) v.findViewById(R.id.lvTweets);
         swipeContainer = (SwipeRefreshLayout) v.findViewById(R.id.swipeContainer);
 
         lvTweets.setAdapter(aTweets);
         setUpView();
+        initialOrRefreshPopulateTimeline((long) 0);
         return v;
     }
 
@@ -65,11 +62,20 @@ public class TweetsListFragment extends Fragment {
         aTweets.insert(tweet, position);
     }
 
+    public void clear() {
+        aTweets.clear();
+    }
+
     private void setUpView() {
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                if (NetworkConnectivityReceiver.isNetworkAvailable(v.getContext()) != true) {
+                    Toast.makeText(v.getContext(), "to get new tweets please go online", Toast.LENGTH_LONG).show();
+                    swipeContainer.setRefreshing(false);
+                    return;
+                }
                 initialOrRefreshPopulateTimeline((long) 0);
                 swipeContainer.setRefreshing(false);
             }
@@ -94,20 +100,16 @@ public class TweetsListFragment extends Fragment {
     }
 
     protected void populateTimeline(long offset) {
-        // FIXME: move to set up view or to on create or to each timeline
-//        if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
-//            Toast.makeText(this, "you are offline, there are no new tweets", Toast.LENGTH_LONG).show();
-//            return;
-//        }
+
     }
 
     protected void initialOrRefreshPopulateTimeline(long page) {
         aTweets.clear();
 
-//        if (NetworkConnectivityReceiver.isNetworkAvailable(v.getContext()) != true) {
-//            aTweets.addAll(Tweet.getAll());
-//            return;
-//        }
+        if (NetworkConnectivityReceiver.isNetworkAvailable(v.getContext()) != true) {
+            aTweets.addAll(Tweet.getAll());
+            return;
+        }
 
         populateTimeline(page);
     }

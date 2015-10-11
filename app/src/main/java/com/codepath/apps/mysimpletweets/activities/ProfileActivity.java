@@ -8,13 +8,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codepath.apps.mysimpletweets.Fragments.UserTimelineFragment;
 import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.TwitterApplication;
-import com.codepath.apps.mysimpletweets.models.Session;
 import com.codepath.apps.mysimpletweets.models.User;
 import com.codepath.apps.mysimpletweets.network.TwitterClient;
+import com.codepath.apps.mysimpletweets.utils.NetworkConnectivityReceiver;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.picasso.Picasso;
 
@@ -44,6 +45,10 @@ public class ProfileActivity extends AppCompatActivity {
     private void setUserInfo() {
         // TODO: call user/show to get most up to date user data.
         user = (User) getIntent().getSerializableExtra("user");
+        if (user == null && NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
+            Toast.makeText(this, "you are offline, we can't access your user data", Toast.LENGTH_LONG).show();
+            return;
+        }
         if (user == null) {
             client = TwitterApplication.getRestClient();
             client.getUserVerificationSettings(new JsonHttpResponseHandler() {

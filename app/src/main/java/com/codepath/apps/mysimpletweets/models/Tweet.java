@@ -217,7 +217,12 @@ public class Tweet extends Model implements Serializable {
     }
 
     public static List<Tweet> getAll() {
-        return new Select().from(Tweet.class).orderBy("CREATED_AT DESC").execute();
+        return new Select().from(Tweet.class).orderBy("REMOTE_ID DESC").execute();
+    }
+
+    public static List<Tweet> getAllByScreenName(String screenName) {
+        User user = new Select().from(User.class).where("SCREEN_NAME = ?", screenName).executeSingle();
+        return new Select().from(Tweet.class).where("USER = ?", user.getId()).execute();
     }
 
     public String setCreatedAtNow() {
