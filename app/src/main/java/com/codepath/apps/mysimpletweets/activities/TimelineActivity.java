@@ -6,49 +6,33 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.codepath.apps.mysimpletweets.Fragments.HomeTimelineFragment;
 import com.codepath.apps.mysimpletweets.Fragments.MentionsTimelineFragment;
-import com.codepath.apps.mysimpletweets.Fragments.UserTimelineFragment;
 import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.TwitterApplication;
 import com.codepath.apps.mysimpletweets.network.TwitterClient;
-import com.codepath.apps.mysimpletweets.adapters.EndlessScrollListener;
-import com.codepath.apps.mysimpletweets.adapters.TweetsArrayAdapter;
 import com.codepath.apps.mysimpletweets.models.Session;
-import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.codepath.apps.mysimpletweets.models.User;
 import com.codepath.apps.mysimpletweets.utils.NetworkConnectivityReceiver;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 public class TimelineActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 22;
     private TwitterClient client;
-    private ArrayList<Tweet> tweets;
-    private TweetsArrayAdapter aTweets;
-    private ListView lvTweets;
-    private long max_id = 1;
     private User currentUser;
     private Session session;
-    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,52 +49,10 @@ public class TimelineActivity extends AppCompatActivity {
         // attach the tab strip
         tabStrip.setViewPager(vp);
 
-
-//        setUpView();
         session = new Session();
         populateCurrentUser();
 //        initialOrRefreshPopulateTimeline((long) 0);
         // TODO: delete too many tweets from db
-    }
-
-    // TODO: add swipe to refresh for each timeline
-    private void setUpView() {
-//        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-//        // Setup refresh listener which triggers new data loading
-//        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                initialOrRefreshPopulateTimeline((long) 0);
-//                swipeContainer.setRefreshing(false);
-//            }
-//        });
-//        // Configure the refreshing colors
-//        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-//                android.R.color.holo_green_light,
-//                android.R.color.holo_orange_light,
-//                android.R.color.holo_red_light);
-//
-//        lvTweets = (ListView) findViewById(R.id.lvTweets);
-//        lvTweets.setOnScrollListener(new EndlessScrollListener() {
-//            @Override
-//            protected boolean onLoadMore(int page, int totalItemsCount) {
-//                int position = aTweets.getCount() - 1;
-//                max_id = aTweets.getItem(position).getRemoteId();
-//                populateTimeline(max_id);
-//                return true;
-//            }
-//        });
-    }
-
-    private void initialOrRefreshPopulateTimeline(long page) {
-//        aTweets.clear();
-//
-//        if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
-//            aTweets.addAll(Tweet.getAll());
-//            return;
-//        }
-//
-//        populateTimeline(page);
     }
 
     private void populateCurrentUser() {
@@ -205,7 +147,6 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     public class TweetsPagerAdapter extends FragmentPagerAdapter {
-        final int PAGE_COUNT = 2;
         private String tabTitles[] = { "Home", "Mentions" };
 
         public TweetsPagerAdapter(FragmentManager fm) {
