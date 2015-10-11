@@ -3,14 +3,21 @@ package com.codepath.apps.mysimpletweets.Fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.codepath.apps.mysimpletweets.R;
+import com.codepath.apps.mysimpletweets.adapters.EndlessScrollListener;
 import com.codepath.apps.mysimpletweets.adapters.TweetsArrayAdapter;
 import com.codepath.apps.mysimpletweets.models.Tweet;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +30,7 @@ public class TweetsListFragment extends Fragment {
     private ArrayList<Tweet> tweets;
     private TweetsArrayAdapter aTweets;
     private ListView lvTweets;
+    private long max_id = 1;
 
     @Nullable
     @Override
@@ -31,6 +39,7 @@ public class TweetsListFragment extends Fragment {
         lvTweets = (ListView) v.findViewById(R.id.lvTweets);
 
         lvTweets.setAdapter(aTweets);
+        setUpView();
         return v;
     }
 
@@ -46,5 +55,40 @@ public class TweetsListFragment extends Fragment {
     // call add all on to the adapter and have access to put whatever data we'd like into the adapter
     public void addAll(List<Tweet> tweets) {
         aTweets.addAll(tweets);
+    }
+
+    private void setUpView() {
+//        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+//        // Setup refresh listener which triggers new data loading
+//        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                initialOrRefreshPopulateTimeline((long) 0);
+//                swipeContainer.setRefreshing(false);
+//            }
+//        });
+//        // Configure the refreshing colors
+//        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+//                android.R.color.holo_green_light,
+//                android.R.color.holo_orange_light,
+//                android.R.color.holo_red_light);
+//
+//        lvTweets = (ListView) findViewById(R.id.lvTweets);
+        lvTweets.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            protected boolean onLoadMore(int page, int totalItemsCount) {
+                int position = aTweets.getCount() - 1;
+                max_id = aTweets.getItem(position).getRemoteId();
+                populateTimeline(max_id);
+                return true;
+            }
+        });
+    }
+
+    protected void populateTimeline(long offset) {
+//        if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
+//            Toast.makeText(this, "you are offline, there are no new tweets", Toast.LENGTH_LONG).show();
+//            return;
+//        }
     }
 }

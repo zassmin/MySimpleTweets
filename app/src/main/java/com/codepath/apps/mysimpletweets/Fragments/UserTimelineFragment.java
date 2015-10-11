@@ -35,12 +35,12 @@ public class UserTimelineFragment extends TweetsListFragment {
         return userTimelineFragment;
     }
 
-    private void populateTimeline(Long offset) {
+    protected void populateTimeline(long offset) {
 //        if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
 //            Toast.makeText(this, "you are offline, there are no new tweets", Toast.LENGTH_LONG).show();
 //            return;
 //        }
-        String screenName = getArguments().getString(SCREEN_NAME, "");
+        String screenName = getArguments().getString(UserTimelineFragment.SCREEN_NAME, "");
 
         client.getUserTimeline(screenName, new JsonHttpResponseHandler() {
             @Override

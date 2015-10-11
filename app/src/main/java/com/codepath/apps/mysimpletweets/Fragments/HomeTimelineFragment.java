@@ -26,7 +26,7 @@ public class HomeTimelineFragment extends TweetsListFragment {
         populateTimeline((long) 0);
     }
 
-    private void populateTimeline(Long offset) {
+    protected void populateTimeline(long offset) {
 //        if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
 //            Toast.makeText(this, "you are offline, there are no new tweets", Toast.LENGTH_LONG).show();
 //            return;

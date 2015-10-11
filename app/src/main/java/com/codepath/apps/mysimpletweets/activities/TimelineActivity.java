@@ -73,6 +73,7 @@ public class TimelineActivity extends AppCompatActivity {
         // TODO: delete too many tweets from db
     }
 
+    // TODO: add swipe to refresh for each timeline
     private void setUpView() {
 //        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 //        // Setup refresh listener which triggers new data loading
