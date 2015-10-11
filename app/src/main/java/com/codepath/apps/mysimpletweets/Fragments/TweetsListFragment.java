@@ -61,6 +61,10 @@ public class TweetsListFragment extends Fragment {
         aTweets.addAll(tweets);
     }
 
+    public void insert(Tweet tweet, int position) {
+        aTweets.insert(tweet, position);
+    }
+
     private void setUpView() {
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

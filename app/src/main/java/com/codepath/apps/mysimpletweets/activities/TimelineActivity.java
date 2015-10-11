@@ -19,6 +19,8 @@ import com.codepath.apps.mysimpletweets.Fragments.HomeTimelineFragment;
 import com.codepath.apps.mysimpletweets.Fragments.MentionsTimelineFragment;
 import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.TwitterApplication;
+import com.codepath.apps.mysimpletweets.adapters.SmartFragmentStatePagerAdapter;
+import com.codepath.apps.mysimpletweets.models.Tweet;
 import com.codepath.apps.mysimpletweets.network.TwitterClient;
 import com.codepath.apps.mysimpletweets.models.Session;
 import com.codepath.apps.mysimpletweets.models.User;
@@ -33,6 +35,7 @@ public class TimelineActivity extends AppCompatActivity {
     private TwitterClient client;
     private User currentUser;
     private Session session;
+    private TweetsPagerAdapter adapterViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +45,9 @@ public class TimelineActivity extends AppCompatActivity {
 
         // get the view pager
         ViewPager vp = (ViewPager) findViewById(R.id.viewpager);
+        adapterViewPager = new TweetsPagerAdapter(getSupportFragmentManager());
         // set up the view pager adapter for the pager
-        vp.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager()));
+        vp.setAdapter(adapterViewPager);
         // find the sliding tab string
         PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         // attach the tab strip
@@ -119,19 +123,21 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     public void onCompose(MenuItem item) {
-//        Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show();
-//        Intent intent = new Intent(this, ComposeActivity.class);
-//        intent.putExtra("current_user", session.getCurrentUser());
-//        startActivityForResult(intent, REQUEST_CODE);
+        Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, ComposeActivity.class);
+        intent.putExtra("current_user", session.getCurrentUser());
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
+    // TODO: http://guides.codepath.com/android/Creating-and-Using-Fragments#finding-fragment-within-pager
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-//            Tweet tweetFromServer = (Tweet) data.getSerializableExtra("tweet");
-//            Toast.makeText(this, "api data" + tweetFromServer.getBody().toString(), Toast.LENGTH_LONG).show();
-//            aTweets.insert(tweetFromServer, 0);
-//        }
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            Tweet tweetFromServer = (Tweet) data.getSerializableExtra("tweet");
+            Toast.makeText(this, "api data" + tweetFromServer.getBody().toString(), Toast.LENGTH_LONG).show();
+            HomeTimelineFragment homeTimelineFragment = (HomeTimelineFragment) adapterViewPager.getRegisteredFragment(0);
+            homeTimelineFragment.insert(tweetFromServer, 0); // FIXME: how does this update the adapter? bind here
+        }
     }
 
     private void logOut() {
@@ -146,7 +152,7 @@ public class TimelineActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public class TweetsPagerAdapter extends FragmentPagerAdapter {
+    public class TweetsPagerAdapter extends SmartFragmentStatePagerAdapter {
         private String tabTitles[] = { "Home", "Mentions" };
 
         public TweetsPagerAdapter(FragmentManager fm) {
