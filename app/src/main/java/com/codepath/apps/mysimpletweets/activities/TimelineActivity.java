@@ -54,6 +54,7 @@ public class TimelineActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
+        client = TwitterApplication.getRestClient();
 
         // get the view pager
         ViewPager vp = (ViewPager) findViewById(R.id.viewpager);
@@ -66,8 +67,8 @@ public class TimelineActivity extends AppCompatActivity {
 
 
 //        setUpView();
-//        session = new Session();
-//        populateCurrentUser();
+        session = new Session();
+        populateCurrentUser();
 //        initialOrRefreshPopulateTimeline((long) 0);
         // TODO: delete too many tweets from db
     }
@@ -112,53 +113,53 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     private void populateCurrentUser() {
-//        if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
-//            // grab current user from Shared Prefs, if there is one
-//            // FIXME: should this be on a different thread?
-//            SharedPreferences pref =
-//                    PreferenceManager.getDefaultSharedPreferences(this);
-//            String userId = pref.getString("user_id", "");
-//            if (!userId.isEmpty()) {
-//                long uId = Long.parseLong(userId);
-//                currentUser = User.findById(uId);
-//                if (currentUser != null) {
-//                    session.setCurrentUser(currentUser);
-//                } else {
-//                    logOut();
-//                }
-//                return;
-//            }
-//            return; // exit if null, we should not call this endpoint if user isn't online
-//        }
-//
-//        client.getUserVerificationSettings(new JsonHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                // create a user
-//                currentUser = User.findOrCreateFromJson(response);
-//                // set a current user
-//                session.setCurrentUser(currentUser);
-//                // only make the second request if that use isn't stored locally
-//                if (session.getCurrentUser() != null) {
-//                    // set shared preferences
-//                    // this should be happening each time!!
-//                    SharedPreferences pref =
-//                            PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-//                    SharedPreferences.Editor edit = pref.edit();
-//                    edit.putString("user_id", session.getCurrentUser().getId().toString());
-//                    edit.commit();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-//                if (errorResponse != null) {
-//                    Log.d("DEBUG", errorResponse.toString());
-//                } else {
-//                    Log.d("DEBUG", "null error");
-//                }
-//            }
-//        });
+        if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
+            // grab current user from Shared Prefs, if there is one
+            // FIXME: should this be on a different thread?
+            SharedPreferences pref =
+                    PreferenceManager.getDefaultSharedPreferences(this);
+            String userId = pref.getString("user_id", "");
+            if (!userId.isEmpty()) {
+                long uId = Long.parseLong(userId);
+                currentUser = User.findById(uId);
+                if (currentUser != null) {
+                    session.setCurrentUser(currentUser);
+                } else {
+                    logOut();
+                }
+                return;
+            }
+            return; // exit if null, we should not call this endpoint if user isn't online
+        }
+
+        client.getUserVerificationSettings(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // create a user
+                currentUser = User.findOrCreateFromJson(response);
+                // set a current user
+                session.setCurrentUser(currentUser);
+                // only make the second request if that use isn't stored locally
+                if (session.getCurrentUser() != null) {
+                    // set shared preferences
+                    // this should be happening each time!!
+                    SharedPreferences pref =
+                            PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                    SharedPreferences.Editor edit = pref.edit();
+                    edit.putString("user_id", session.getCurrentUser().getId().toString());
+                    edit.commit();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                if (errorResponse != null) {
+                    Log.d("DEBUG", errorResponse.toString());
+                } else {
+                    Log.d("DEBUG", "null error");
+                }
+            }
+        });
     }
 
     @Override
@@ -198,7 +199,7 @@ public class TimelineActivity extends AppCompatActivity {
 
     public void onProfile(MenuItem item) {
         Intent i = new Intent(this, ProfileActivity.class);
-//        i.putExtra("screen_name", currentUser.getScreenName());
+        i.putExtra("user", session.getCurrentUser());
         startActivity(i);
     }
 

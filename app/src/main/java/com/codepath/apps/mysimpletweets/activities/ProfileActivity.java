@@ -3,6 +3,7 @@ package com.codepath.apps.mysimpletweets.activities;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.codepath.apps.mysimpletweets.Fragments.UserTimelineFragment;
 import com.codepath.apps.mysimpletweets.R;
 import com.codepath.apps.mysimpletweets.TwitterApplication;
+import com.codepath.apps.mysimpletweets.models.Session;
 import com.codepath.apps.mysimpletweets.models.User;
 import com.codepath.apps.mysimpletweets.network.TwitterClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -29,10 +31,9 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         setUserInfo();
 
-        String screenName = getIntent().getStringExtra("screen_name");
         if (savedInstanceState == null) {
             // create the user timeline fragment
-            UserTimelineFragment userTimelineFragment = UserTimelineFragment.newInstance(screenName);
+            UserTimelineFragment userTimelineFragment = UserTimelineFragment.newInstance(user.getScreenName());
             // display the fragment within the activity
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.flContainer, userTimelineFragment);
@@ -41,15 +42,27 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setUserInfo() {
-        client = TwitterApplication.getRestClient();
-        client.getUserVerificationSettings(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                user = User.findOrCreateFromJson(response);
-                getSupportActionBar().setTitle("@" + user.getScreenName());
-                populateProfileHeader(user);
-            }
-        });
+        // TODO: call user/show to get most up to date user data.
+        user = (User) getIntent().getSerializableExtra("user");
+        if (user == null) {
+            client = TwitterApplication.getRestClient();
+            client.getUserVerificationSettings(new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    user = User.findOrCreateFromJson(response);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    Log.i("FAILED USER REQUEST", responseString);
+                }
+            });
+            // FIXME: ^^^ I can't actually get user, I don't know if there is a lag in the request
+            // ...so I'm getting it in the timeline activity instead
+        }
+
+        getSupportActionBar().setTitle("@" + user.getScreenName());
+        populateProfileHeader(user);
     }
 
     private void populateProfileHeader(User user) {
