@@ -87,7 +87,9 @@ online mode....
 
 ![WTonline](https://media.giphy.com/media/3o85xqYy6f0QMy9CY8/giphy.gif)
 
-...coming soon...offline mode...
+offline mode...
+
+![WToffline](https://media.giphy.com/media/3oEdv6TVvdOOOU9464/giphy.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
