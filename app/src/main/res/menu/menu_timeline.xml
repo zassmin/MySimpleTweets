@@ -2,6 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.codepath.apps.mysimpletweets.activities.TimelineActivity">
+
     <item
         android:id="@+id/as_compose"
         android:icon="@drawable/ic_compose"

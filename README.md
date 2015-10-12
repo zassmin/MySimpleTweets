@@ -27,16 +27,12 @@ The following **optional** features are implemented:
 * [X] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
 * [ ] User can tap a tweet to **open a detailed tweet view**
 * [ ] User can **select "reply" from detail view to respond to a tweet**
-* [ ] Improve the user interface and theme the app to feel "twitter branded"
+* [X] Improve the user interface and theme the app to feel "twitter branded"
 
 The following **bonus** features are implemented:
 
 * [ ] User can see embedded image media within the tweet detail view
 * [ ] Compose tweet functionality is build using modal overlay
-
-The following **additional** features are implemented:
-
-* [ ] ...
 
 ## Video Walkthrough 
 
@@ -46,8 +42,7 @@ Here's a walkthrough of implemented user stories:
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
-# PART 2
-
+# PART 2 - Project 4
 
 **My Simple App part 2** is an android app that allows a user to view home and mentions timelines, view user profiles with user timelines, as well as compose and post a new tweet. The app utilizes [Twitter REST API](https://dev.twitter.com/rest/public).
 
@@ -77,22 +72,22 @@ The following **optional** features are implemented:
   * [ ] The user that wrote the original tweet is automatically "@" replied in compose
 * [ ] User can click on a tweet to be **taken to a "detail view"** of that tweet
  * [ ] User can take favorite (and unfavorite) or retweet actions on a tweet
-* [ ] Improve the user interface and theme the app to feel twitter branded
+* [X] Improve the user interface and theme the app to feel twitter branded
 * [ ] User can **search for tweets matching a particular query** and see results
 
 The following **bonus** features are implemented:
 
 * [ ] User can view their direct messages (or send new ones)
 
-The following **additional** features are implemented:
-
-* [ ] List anything else that you can get done to improve the app functionality!
-
 ## Video Walkthrough 
 
 Here's a walkthrough of implemented user stories:
 
-...coming soon...
+online mode....
+
+![WTonline](https://media.giphy.com/media/3o85xqYy6f0QMy9CY8/giphy.gif)
+
+...coming soon...offline mode...
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
@@ -102,6 +97,8 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 After a number has exceeded?
 * I don't know how to return the tweet object in offline mode while making sure 
 the tweet posts when the user is back online. Any suggestions? 
+* How can we change the color of the action bar items? I ended up just replacing the "up arrow" with a png. 
+* I didn't quite follow the next reach up pattern in Adapter on click listener, it's calling the ProfileActivity.class. What would have been the better approach?
 
 ## Open-source libraries used
 

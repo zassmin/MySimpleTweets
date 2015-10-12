@@ -1,6 +1,7 @@
 package com.codepath.apps.mysimpletweets.activities;
 
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,13 +24,17 @@ import org.apache.http.Header;
 import org.json.JSONObject;
 
 public class ProfileActivity extends AppCompatActivity {
-    TwitterClient client;
+    private TwitterClient client;
     User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_up);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         setUserInfo();
 
         if (savedInstanceState == null) {
@@ -66,6 +71,10 @@ public class ProfileActivity extends AppCompatActivity {
             // ...so I'm getting it in the timeline activity instead
         }
 
+        if (user == null) {
+            Toast.makeText(this, "this app sucks and can't set a proper user!", Toast.LENGTH_LONG).show();
+            return;
+        }
         getSupportActionBar().setTitle("@" + user.getScreenName());
         populateProfileHeader(user);
     }

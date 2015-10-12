@@ -7,8 +7,10 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.TimeKeyListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,7 +44,7 @@ public class TimelineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
         client = TwitterApplication.getRestClient();
-
+        getSupportActionBar().setLogo(R.mipmap.ic_launcher);
         // get the view pager
         ViewPager vp = (ViewPager) findViewById(R.id.viewpager);
         adapterViewPager = new TweetsPagerAdapter(getSupportFragmentManager());
@@ -57,6 +59,11 @@ public class TimelineActivity extends AppCompatActivity {
         populateCurrentUser();
     }
 
+    /* TODOs:
+    * [ ] Better UI with nice background colors, font colors, and font size, and text caps stuff, icons - even if they don't work
+    * [ ] Update UI of swipe to refresh notice
+    * [ ] Display followers/following
+    */
     private void populateCurrentUser() {
         if (NetworkConnectivityReceiver.isNetworkAvailable(this) != true) {
             // grab current user from Shared Prefs, if there is one
